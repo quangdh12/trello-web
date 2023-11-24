@@ -24,6 +24,7 @@ function Profile() {
     return (
         <div>
             <Button
+                sx={{ color: 'white' }}
                 id="basic-button-profile"
                 aria-controls={open ? 'basic-menu-profile' : undefined}
                 aria-haspopup="true"
@@ -33,7 +34,7 @@ function Profile() {
                 <Tooltip title="Account settings">
 
                     <Avatar
-                        sx={{ width: 30, height: 30 }}
+                        sx={{ width: 34, height: 34 }}
                         src='https://img.docbao.vn/images/uploads/2023/07/01/001rose-1879.jpg'
                         alt='profile-image' />
 
