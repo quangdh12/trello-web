@@ -10,6 +10,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Tooltip from '@mui/material/Tooltip';
+import { capitalizeFirstLetter } from '~/utils/formatters';
 
 
 const MENU_STYLES = {
@@ -26,7 +27,9 @@ const MENU_STYLES = {
     }
 };
 
-function BoardBar() {
+function BoardBar(props) {
+    const { board } = props;
+
     return (
         <Box sx={{
             width: '100%',
@@ -44,12 +47,12 @@ function BoardBar() {
                 <Chip
                     sx={MENU_STYLES}
                     icon={<DashboardIcon />}
-                    label="Dashboard" clickable />
+                    label={board?.title} clickable />
 
                 <Chip
                     sx={MENU_STYLES}
                     icon={<VpnLockIcon />}
-                    label="Public/Private Workspace" clickable />
+                    label={capitalizeFirstLetter(board?.type)} clickable />
 
                 <Chip
                     sx={MENU_STYLES}

@@ -17,8 +17,11 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Box from '@mui/material/Box'
 import { useState } from 'react';
 import ListCard from './ListCard/ListCard';
+import { mapOrder } from '~/utils/sorts';
 
-function Column() {
+function Column({ column }) {
+
+    const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, '_id');
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -28,6 +31,7 @@ function Column() {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
 
     return (
 
@@ -60,7 +64,7 @@ function Column() {
                         cursor: 'pointer',
                     }}
                 >
-                    Column Title
+                    {column?.title}
                 </Typography>
                 <Box>
                     <Tooltip title="More options">
@@ -128,7 +132,7 @@ function Column() {
                 </Box>
             </Box>
 
-            <ListCard />
+            <ListCard cards={orderedCards} />
 
             {/* Box Column Footer*/}
             <Box
