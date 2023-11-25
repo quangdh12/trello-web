@@ -12,7 +12,7 @@ import ContentPaste from '@mui/icons-material/ContentPaste';
 import Cloud from '@mui/icons-material/Cloud';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-function Workspace() {
+function Workspaces() {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -83,4 +83,4 @@ function Workspace() {
     );
 }
 
-export default Workspace
+export default Workspaces

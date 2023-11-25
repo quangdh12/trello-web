@@ -14,12 +14,12 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import { ReactComponent as TrelloIcon } from '~/assets/trello.svg';
-import ModeSelect from '~/components/ModeSelect';
+import ModeSelect from '~/components/ModeSelect/ModeSelect';
 import Profile from './Menu/Profile';
 import Recent from './Menu/Recent';
 import Starred from './Menu/Starred';
 import Templates from './Menu/Templates';
-import Workspace from './Menu/Workspace';
+import Workspaces from './Menu/Workspaces';
 
 function AppBar() {
     const [searchValue, setSearchValue] = useState('');
@@ -47,7 +47,7 @@ function AppBar() {
                 </Box>
 
                 <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
-                    <Workspace />
+                    <Workspaces />
                     <Recent />
                     <Starred />
                     <Templates />
