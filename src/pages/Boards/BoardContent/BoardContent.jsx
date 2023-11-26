@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Box from '@mui/material/Box'
 import ListColumn from './ListColumns/ListColumn'
 import { mapOrder } from '~/utils/sorts'
@@ -11,12 +11,14 @@ import {
     useSensors,
     DragOverlay,
     defaultDropAnimationSideEffects,
-    closestCorners
+    closestCorners,
+    pointerWithin,
+    getFirstCollision,
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import Column from './ListColumns/Column/Column';
 import Card from './ListColumns/Column/ListCard/Card/Card';
-import { cloneDeep } from 'lodash'
+import { cloneDeep, over } from 'lodash'
 
 const ACTIVE_DRAG_ITEM_TYPE = {
     COLUMN: 'column',
@@ -26,10 +28,13 @@ const ACTIVE_DRAG_ITEM_TYPE = {
 function BoardContent({ board }) {
 
     const [orderedColumns, setOrderedColumns] = useState([]);
+
     const [activeDragItemId, setActiveDragItemId] = useState(null);
     const [activeDragItemType, setActiveDragItemType] = useState(null);
     const [activeDragItemData, setActiveDragItemData] = useState(null);
     const [oldColumnWhenDraggingCard, setOldColumnWhenDraggingCard] = useState(null);
+
+    const lastOverId = useRef(null);
 
     // const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
     const mouseSensor = useSensor(MouseSensor, { activationConstraint: { distance: 10 } })
@@ -175,13 +180,50 @@ function BoardContent({ board }) {
         sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.5' } } })
     }
 
+    // fix bug: flickering when drag card between column
+    const collisionDetectionStrategy = useCallback((args) => {
+        if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) {
+            return closestCorners({ ...args });
+        }
+
+        const pointerIntersections = pointerWithin(args);
+
+        // if drag to space not in column, return
+        if (!pointerIntersections?.length) return;
+
+        // const intersections = pointerIntersections?.length > 0 ?
+        //     pointerIntersections :
+        //     rectIntersection(args);
+
+        let overId = getFirstCollision(pointerIntersections, 'id');
+        if (overId) {
+            const targetColumn = orderedColumns.find(column => column._id === overId);
+
+            // get cardId instead of columnId if have
+            if (targetColumn) {
+                overId = closestCorners({
+                    ...args,
+                    droppableContainers: args.droppableContainers.filter(
+                        container => (container.id !== overId &&
+                            (targetColumn?.cardOrderIds?.includes(container.id))
+                        ))
+                })[0]?.id;
+            }
+
+            lastOverId.current = overId;
+            return [{ id: overId }];
+        }
+
+        return lastOverId.current ? [{ id: lastOverId.current }] : [];
+    }, [activeDragItemType, orderedColumns])
+
     return (
         <DndContext
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
             sensors={sensors}
-            collisionDetection={closestCorners}
+            collisionDetection={collisionDetectionStrategy}
         >
             <Box sx={{
                 bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#565656' : '#0055c5'),
