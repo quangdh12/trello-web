@@ -18,7 +18,8 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 import Column from './ListColumns/Column/Column';
 import Card from './ListColumns/Column/ListCard/Card/Card';
-import { cloneDeep, over } from 'lodash'
+import { cloneDeep, isEmpty } from 'lodash'
+import { generatePlaceholderCard } from '~/utils/formatters';
 
 const ACTIVE_DRAG_ITEM_TYPE = {
     COLUMN: 'column',
@@ -70,12 +71,20 @@ function BoardContent({ board }) {
             const nextActiveColumn = nextColumns.find(column => column._id === activeColumn._id);
             const nextOverColumn = nextColumns.find(column => column._id === overColumn._id);
 
+            // handle dragged column
             if (nextActiveColumn) {
-                // remove card from active column (drag column) and update cardOrderIds
+                // remove card from active column (dragged column) and update cardOrderIds
                 nextActiveColumn.cards = nextActiveColumn.cards.filter(card => card._id !== activeDragItemId);
+
+                // if dragged column haven't card, create placeholder card
+                if (isEmpty(nextActiveColumn.cards)) {
+                    nextActiveColumn.cards = [generatePlaceholderCard(nextActiveColumn)];
+                }
+
                 nextActiveColumn.cardOrderIds = nextActiveColumn.cards.map(card => card._id);
             }
 
+            // handle dropped column
             if (nextOverColumn) {
                 // check if dragging card is exist in overColumn, remove it
                 nextOverColumn.cards = nextOverColumn.cards.filter(card => card._id !== activeDragItemId);
@@ -88,6 +97,10 @@ function BoardContent({ board }) {
 
                 // update overColumn and cardOrderIds
                 nextOverColumn.cards = nextOverColumn.cards.toSpliced(newCardIndex, 0, update_activeDraggingCardData)
+
+                // if column have placeholder card, remove it
+                nextOverColumn.cards = nextOverColumn.cards.filter(card => !card.FE_PlaceholderCard);
+
                 nextOverColumn.cardOrderIds = nextOverColumn.cards.map(card => card._id);
             }
             return nextColumns;
@@ -177,7 +190,7 @@ function BoardContent({ board }) {
     }
 
     const dropAnimation = {
-        sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.5' } } })
+        sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.5' } } }),
     }
 
     // fix bug: flickering when drag card between column
