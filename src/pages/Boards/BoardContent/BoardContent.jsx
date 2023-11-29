@@ -1,12 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Box from '@mui/material/Box'
-import ListColumn from './ListColumns/ListColumn'
+import ListColumn from './ListColumn/ListColumn'
 import { mapOrder } from '~/utils/sorts'
 import {
     DndContext,
-    // PointerSensor,
-    MouseSensor,
-    TouchSensor,
     useSensor,
     useSensors,
     DragOverlay,
@@ -15,9 +12,10 @@ import {
     pointerWithin,
     getFirstCollision,
 } from '@dnd-kit/core';
+import { MouseSensor, TouchSensor } from '~/customLibs/DndKitSensors'
 import { arrayMove } from '@dnd-kit/sortable';
-import Column from './ListColumns/Column/Column';
-import Card from './ListColumns/Column/ListCard/Card/Card';
+import Column from './ListColumn/Column/Column';
+import Card from './ListColumn/Column/ListCard/Card/Card';
 import { cloneDeep, isEmpty } from 'lodash'
 import { generatePlaceholderCard } from '~/utils/formatters';
 
