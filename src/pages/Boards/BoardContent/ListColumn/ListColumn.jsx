@@ -1,23 +1,38 @@
-import Box from '@mui/material/Box'
-import Column from './Column/Column'
-import Button from '@mui/material/Button'
-import NoteAddIcon from '@mui/icons-material/NoteAdd'
 import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
-import { useState } from 'react'
+import { toast } from 'react-toastify'
+import CloseIcon from '@mui/icons-material/Close'
+import NoteAddIcon from '@mui/icons-material/NoteAdd'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
-import CloseIcon from '@mui/icons-material/Close';
+import { useState } from 'react'
+import Column from './Column/Column'
 
-function ListColumn({ columns }) {
+
+function ListColumn({ columns, createNewColumn, createNewCard }) {
 
     const [openNewColumnForm, setOpenNewColumnForm] = useState(false);
-    const toggleOpenNewColumnForm = () => setOpenNewColumnForm(!openNewColumnForm)
+    const toggleOpenNewColumnForm = () => {
+        if (openNewColumnForm) {
+            setNewColumnTitle('');
+        }
+        setOpenNewColumnForm(!openNewColumnForm);
+    }
     const [newColumnTitle, setNewColumnTitle] = useState('')
 
-    const addNewColumn = () => {
-        if (!newColumnTitle)
+    const addNewColumn = async () => {
+        if (!newColumnTitle) {
+            toast.error('Please enter title!');
             return;
-        toggleOpenNewColumnForm()
-        setNewColumnTitle('')
+        }
+        const newColumnData = {
+            title: newColumnTitle,
+        }
+
+        await createNewColumn(newColumnData);
+
+        toggleOpenNewColumnForm();
+        setNewColumnTitle('');
     }
 
     return (
@@ -36,7 +51,7 @@ function ListColumn({ columns }) {
                 }}
             >
                 {columns?.map((column) => (
-                    <Column key={column._id} column={column} />
+                    <Column key={column._id} column={column} createNewCard={createNewCard} />
                 ))}
 
                 {!openNewColumnForm ?

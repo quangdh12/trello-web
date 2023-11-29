@@ -2,19 +2,8 @@
 import Box from '@mui/material/Box';
 import Card from './Card/Card';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { useState } from 'react';
 
 function ListCard({ cards }) {
-    const [openNewCardForm, setOpenNewCardForm] = useState(false);
-    const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm)
-    const [newCardTitle, setNewCardTitle] = useState('')
-
-    const addNewCard = () => {
-        if (!newCardTitle)
-            return;
-        toggleOpenNewCardForm()
-        setNewCardTitle('')
-    }
 
     return (
         <SortableContext

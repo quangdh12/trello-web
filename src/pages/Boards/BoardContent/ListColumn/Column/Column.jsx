@@ -22,8 +22,9 @@ import { CSS } from '@dnd-kit/utilities';
 import { useSortable } from '@dnd-kit/sortable';
 import TextField from '@mui/material/TextField';
 import CloseIcon from '@mui/icons-material/Close';
+import { toast } from 'react-toastify';
 
-function Column({ column }) {
+function Column({ column, createNewCard }) {
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable(
         {
@@ -42,12 +43,26 @@ function Column({ column }) {
     const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, '_id');
 
     const [openNewCardForm, setOpenNewCardForm] = useState(false);
-    const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm)
+    const toggleOpenNewCardForm = () => {
+        if (openNewCardForm) {
+            setNewCardTitle('');
+        }
+        setOpenNewCardForm(!openNewCardForm);
+    }
     const [newCardTitle, setNewCardTitle] = useState('')
 
-    const addNewCard = () => {
-        if (!newCardTitle)
+    const addNewCard = async () => {
+        if (!newCardTitle) {
+            toast.error('Please enter title!', { position: 'bottom-right' })
             return;
+        }
+
+        const newCardData = {
+            title: newCardTitle,
+            columnId: column._id
+        }
+        await createNewCard(newCardData);
+
         toggleOpenNewCardForm()
         setNewCardTitle('')
     }
@@ -60,7 +75,6 @@ function Column({ column }) {
     const handleClose = () => {
         setAnchorEl(null);
     };
-
 
     return (
         <div ref={setNodeRef}
@@ -165,7 +179,7 @@ function Column({ column }) {
                     </Box>
                 </Box>
 
-                <ListCard cards={orderedCards} />
+                <ListCard cards={orderedCards} createNewCard={createNewCard} />
 
                 {/* Box Column Footer*/}
                 <Box
