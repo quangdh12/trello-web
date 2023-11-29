@@ -24,7 +24,7 @@ const ACTIVE_DRAG_ITEM_TYPE = {
     CARD: 'card'
 }
 
-function BoardContent({ board }) {
+function BoardContent({ board, createNewColumn, createNewCard }) {
 
     const [orderedColumns, setOrderedColumns] = useState([]);
 
@@ -242,7 +242,10 @@ function BoardContent({ board }) {
                 height: (theme) => theme.trello.boardContentHeight,
                 p: '10px 0'
             }}>
-                <ListColumn columns={orderedColumns} />
+                <ListColumn
+                    columns={orderedColumns}
+                    createNewColumn={createNewColumn}
+                    createNewCard={createNewCard} />
                 <DragOverlay dropAnimation={dropAnimation}>
                     {!activeDragItemType && null}
                     {(activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) && <Column column={activeDragItemData} />}
