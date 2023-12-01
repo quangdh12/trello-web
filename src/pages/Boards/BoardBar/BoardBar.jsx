@@ -39,7 +39,8 @@ function BoardBar(props) {
             justifyContent: 'space-between',
             gap: 2,
             paddingX: 2,
-            overFlowX: 'auto',
+            overflowX: 'auto',
+            '&::-webkit-scrollbar': { width: '8px', height: '8px' },
             bgcolor: (theme) => (theme.palette.mode == 'dark' ? '#565656' : '#0055c5'),
         }}
         >

@@ -34,6 +34,7 @@ function AppBar() {
             gap: 2,
             paddingX: 2,
             overflowX: 'auto',
+            '&::-webkit-scrollbar': { width: '8px', height: '8px' },
             bgcolor: (theme) => (theme.palette.mode == 'dark' ? '#3b3b3b' : '#0032c7')
         }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -68,12 +69,7 @@ function AppBar() {
                 </Box>
 
             </Box>
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 2,
-                }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <TextField
                     id='outlined-search'
                     label='Search...'

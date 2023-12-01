@@ -23,6 +23,7 @@ function ListCard({ cards }) {
                         ${theme.spacing(5)} - 
                         ${theme.trello.columnHeaderHeight} -
                         ${theme.trello.columnFooterHeight})`,
+                    '&::-webkit-scrollbar': { width: '8px', height: '8px' },
                     '&::-webkit-scrollbar-thumb': {
                         backgroundColor: '#ced0da',
                     },
