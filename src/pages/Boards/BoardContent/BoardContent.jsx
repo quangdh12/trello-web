@@ -24,7 +24,7 @@ const ACTIVE_DRAG_ITEM_TYPE = {
     CARD: 'card'
 }
 
-function BoardContent({ board, createNewColumn, createNewCard }) {
+function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
 
     const [orderedColumns, setOrderedColumns] = useState([]);
 
@@ -176,7 +176,9 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
                 const oldColumnIndex = orderedColumns.findIndex(c => c._id == active.id);
                 const newColumnIndex = orderedColumns.findIndex(c => c._id === over.id);
                 const dndOrderedColumns = arrayMove(orderedColumns, oldColumnIndex, newColumnIndex);
-                // const dndOrderedColumnsIds = dndOrderedColumns.map((c => c._id));
+
+                moveColumns(dndOrderedColumns);
+
                 setOrderedColumns(dndOrderedColumns);
             }
         }
