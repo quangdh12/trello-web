@@ -1,28 +1,27 @@
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Divider from '@mui/material/Divider';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ContentCut from '@mui/icons-material/ContentCut';
-import ContentCopy from '@mui/icons-material/ContentCopy';
-import ContentPaste from '@mui/icons-material/ContentPaste';
-import Cloud from '@mui/icons-material/Cloud';
-import Tooltip from '@mui/material/Tooltip';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import AddCardIcon from '@mui/icons-material/AddCard';
+import CloseIcon from '@mui/icons-material/Close';
+import Cloud from '@mui/icons-material/Cloud';
+import ContentCopy from '@mui/icons-material/ContentCopy';
+import ContentCut from '@mui/icons-material/ContentCut';
+import ContentPaste from '@mui/icons-material/ContentPaste';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import Box from '@mui/material/Box'
-import { useState } from 'react';
-import ListCard from './ListCard/ListCard';
-import { mapOrder } from '~/utils/sorts';
-import { CSS } from '@dnd-kit/utilities';
-import { useSortable } from '@dnd-kit/sortable';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
-import CloseIcon from '@mui/icons-material/Close';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
+import ListCard from './ListCard/ListCard';
 
 function Column({ column, createNewCard }) {
 
@@ -40,7 +39,7 @@ function Column({ column, createNewCard }) {
         // touchAction: 'none'
     };
 
-    const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, '_id');
+    const orderedCards = column?.cards;
 
     const [openNewCardForm, setOpenNewCardForm] = useState(false);
     const toggleOpenNewCardForm = () => {
