@@ -11,7 +11,9 @@ import {
     moveCartToDifferentColumnAPI,
     updateBoardDetailsAPI,
     updateColumnDetailsAPI,
-    deleteColumnDetailsAPI
+    deleteColumnDetailsAPI,
+    updateCardDetailsAPI,
+    deleteCardDetailsAPI
 } from '~/apis';
 import AppBar from '~/components/AppBar/AppBar';
 import { generatePlaceholderCard } from '~/utils/formatters';
@@ -138,6 +140,44 @@ function Board() {
 
     }
 
+    const deleteCardDetails = (cardId, columnId) => {
+        const newBoard = { ...board };
+        const currentColumn = newBoard.columns.find(column => column._id === columnId)
+        currentColumn.cards = currentColumn.cards.filter(card => card._id !== cardId)
+        currentColumn.cardOrderIds = currentColumn.cardOrderIds.filter(_id => _id !== cardId)
+        setBoard(newBoard)
+
+        deleteCardDetailsAPI(columnId, cardId).then(res => {
+            toast.success(res?.deleteResult)
+        })
+    }
+
+    const updateTitleColumn = async (newColumnData) => {
+        const { columnId, title } = newColumnData
+        const newBoard = { ...board };
+        const columnToUpdate = newBoard.columns.find(column => column._id === columnId);
+        if (columnToUpdate) {
+            columnToUpdate.title = title;
+        }
+        setBoard(newBoard);
+
+        await updateColumnDetailsAPI(columnId, { title: title });
+    }
+
+    const updateTitleCard = async (newCardData) => {
+        const { cardId, title, columnId } = newCardData
+        const newBoard = { ...board }
+        const cardToUpdate = newBoard
+            .columns.find(column => column._id === columnId)
+            .cards.find(card => card._id === cardId)
+        if (cardToUpdate) {
+            cardToUpdate.title = title
+        }
+        setBoard(newBoard)
+
+        await updateCardDetailsAPI(cardId, { title, columnId })
+    }
+
     if (!board) {
         return (
             <Box sx={{
@@ -165,6 +205,9 @@ function Board() {
                 moveCardInTheSameColumn={moveCardInTheSameColumn}
                 moveCartToDifferentColumn={moveCartToDifferentColumn}
                 deleteColumnDetails={deleteColumnDetails}
+                updateTitleColumn={updateTitleColumn}
+                updateTitleCard={updateTitleCard}
+                deleteCardDetails={deleteCardDetails}
             />
         </Container>
     )

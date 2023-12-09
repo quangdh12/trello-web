@@ -41,3 +41,13 @@ export const createNewCardAPI = async (newCardData) => {
     const response = await axios.post(`${API_ROOT}/v1/cards`, newCardData);
     return response.data;
 }
+
+export const updateCardDetailsAPI = async (cardId, updateData) => {
+    const response = await axios.put(`${API_ROOT}/v1/cards/${cardId}`, updateData)
+    return response.data
+}
+
+export const deleteCardDetailsAPI = async (columnId, cardId) => {
+    const response = await axios.delete(`${API_ROOT}/v1/cards/${cardId}`, { data: { columnId } });
+    return response.data;
+}

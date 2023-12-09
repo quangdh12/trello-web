@@ -4,7 +4,7 @@ import AddCardIcon from '@mui/icons-material/AddCard';
 import CloseIcon from '@mui/icons-material/Close';
 import Cloud from '@mui/icons-material/Cloud';
 import ContentCopy from '@mui/icons-material/ContentCopy';
-import ContentCut from '@mui/icons-material/ContentCut';
+import EditIcon from '@mui/icons-material/Edit';
 import ContentPaste from '@mui/icons-material/ContentPaste';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
@@ -19,12 +19,16 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import ListCard from './ListCard/ListCard';
 import { useConfirm } from 'material-ui-confirm';
+import { ClickAwayListener } from '@mui/material';
 
-function Column({ column, createNewCard, deleteColumnDetails }) {
+function Column(
+    { column, createNewCard, deleteColumnDetails,
+        updateTitleColumn, updateTitleCard, deleteCardDetails }
+) {
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable(
         {
@@ -43,13 +47,21 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
     const orderedCards = column?.cards;
 
     const [openNewCardForm, setOpenNewCardForm] = useState(false);
+    const [editTitleColumnForm, setEditTitleColumnForm] = useState(false);
     const toggleOpenNewCardForm = () => {
         if (openNewCardForm) {
             setNewCardTitle('');
         }
         setOpenNewCardForm(!openNewCardForm);
     }
+
+    const handleOpenEditColumnForm = () => {
+        setEditTitleColumnForm(true);
+    }
+
+
     const [newCardTitle, setNewCardTitle] = useState('')
+    const [newColumTitle, setNewColumnTitle] = useState(column?.title)
 
     const addNewCard = async () => {
         if (!newCardTitle) {
@@ -65,6 +77,23 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
 
         toggleOpenNewCardForm()
         setNewCardTitle('')
+    }
+
+    const updateColumn = async () => {
+        if (!newColumTitle) {
+            toast.error('Please enter title!', { position: 'top-center' })
+            return;
+        }
+
+        const newColumnData = {
+            title: newColumTitle,
+            columnId: column._id
+        }
+
+        await updateTitleColumn(newColumnData);
+
+        setEditTitleColumnForm(false)
+        setNewColumnTitle(column?.title)
     }
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -115,17 +144,83 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
                         justifyContent: 'space-between'
                     }}
                 >
-                    <Typography
-                        variant='h6'
-                        sx={{
-                            fontSize: '1rem',
-                            fontWeight: 'bold',
-                            cursor: 'pointer',
-                        }}
-                    >
-                        {column?.title}
-                    </Typography>
                     <Box>
+                        {editTitleColumnForm ?
+                            <ClickAwayListener onClickAway={() => setEditTitleColumnForm(false)}>
+                                <Box sx={{
+                                    height: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    gap: 1
+                                }}>
+
+                                    <TextField
+                                        type='text'
+                                        size='small'
+                                        variant='outlined'
+                                        autoFocus
+                                        data-no-dnd='true'
+                                        value={newColumTitle}
+                                        onChange={(e) => setNewColumnTitle(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Escape') {
+                                                setEditTitleColumnForm(false);
+                                            }
+                                            if (e.key === 'Enter') {
+                                                updateColumn()
+                                            }
+                                        }}
+                                        sx={{
+                                            '& label': { color: 'white', },
+                                            '& input': {
+                                                color: (theme) => theme.palette.primary.main,
+                                                bgcolor: (theme) => theme.palette.mode === 'dark' ? '#333643' : 'white'
+                                            },
+                                            '& label.Mui-focused': { color: (theme) => theme.palette.primary.main },
+                                            '& .MuiOutlinedInput-root': {
+                                                '& fieldset': { borderColor: (theme) => theme.palette.primary.main },
+                                                '&:hover fieldset': { borderColor: (theme) => theme.palette.primary.main },
+                                                '&.Mui-focused fieldset': { borderColor: (theme) => theme.palette.primary.main, }
+                                            },
+                                            '& .MuiOutlinedInput-input': { borderRadius: 1 }
+                                        }}
+                                    />
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Button
+                                            onClick={updateColumn}
+                                            variant='contained'
+                                            color='primary'
+                                            data-no-dnd='true'
+                                            size='small'
+                                            sx={{
+                                                boxShadow: 'none',
+                                                border: '0.5 solid',
+                                                borderColor: '#0077B6',
+                                                '&:hover': { bgcolor: '#599AFC' }
+                                            }}
+                                        >
+                                            Update
+                                        </Button>
+                                    </Box>
+                                </Box>
+                            </ClickAwayListener>
+                            : <Typography
+                                variant='h6'
+                                sx={{
+                                    fontSize: '1rem',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                {column?.title}
+                            </Typography>
+                        }
+
+                    </Box>
+                    <Box sx={{
+                        display: editTitleColumnForm ? 'none' : 'block'
+                    }}>
                         <Tooltip title="More options">
                             <MoreHorizIcon
                                 id="basic-button-dropdown"
@@ -158,11 +253,15 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
                                 <ListItemText>Add new card</ListItemText>
                             </MenuItem>
 
-                            <MenuItem>
+                            <MenuItem onClick={handleOpenEditColumnForm}
+                                sx={{
+                                    '&:hover': { color: 'info.light' },
+                                    '&.edit-title-icon': { color: 'info.light' }
+                                }}>
                                 <ListItemIcon>
-                                    <ContentCut fontSize="small" />
+                                    <EditIcon fontSize="small" className='edit-title-icon' />
                                 </ListItemIcon>
-                                <ListItemText>Cut</ListItemText>
+                                <ListItemText>Edit title</ListItemText>
                             </MenuItem>
 
                             <MenuItem>
@@ -202,7 +301,12 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
                     </Box>
                 </Box>
 
-                <ListCard cards={orderedCards} createNewCard={createNewCard} />
+                <ListCard
+                    cards={orderedCards}
+                    createNewCard={createNewCard}
+                    updateTitleCard={updateTitleCard}
+                    deleteCardDetails={deleteCardDetails}
+                />
 
                 {/* Box Column Footer*/}
                 <Box
