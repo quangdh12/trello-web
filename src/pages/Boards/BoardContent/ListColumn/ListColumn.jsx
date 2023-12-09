@@ -9,7 +9,7 @@ import { useState } from 'react'
 import Column from './Column/Column'
 
 
-function ListColumn({ columns, createNewColumn, createNewCard }) {
+function ListColumn({ columns, createNewColumn, createNewCard, deleteColumnDetails }) {
 
     const [openNewColumnForm, setOpenNewColumnForm] = useState(false);
     const toggleOpenNewColumnForm = () => {
@@ -51,7 +51,11 @@ function ListColumn({ columns, createNewColumn, createNewCard }) {
                 }}
             >
                 {columns?.map((column) => (
-                    <Column key={column._id} column={column} createNewCard={createNewCard} />
+                    <Column key={column._id}
+                        column={column}
+                        createNewCard={createNewCard}
+                        deleteColumnDetails={deleteColumnDetails}
+                    />
                 ))}
 
                 {!openNewColumnForm ?

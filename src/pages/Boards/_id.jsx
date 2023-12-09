@@ -10,13 +10,15 @@ import {
     fetchBoardDetailsAPI,
     moveCartToDifferentColumnAPI,
     updateBoardDetailsAPI,
-    updateColumnDetailsAPI
+    updateColumnDetailsAPI,
+    deleteColumnDetailsAPI
 } from '~/apis';
 import AppBar from '~/components/AppBar/AppBar';
 import { generatePlaceholderCard } from '~/utils/formatters';
 import { mapOrder } from '~/utils/sorts';
 import BoardBar from './BoardBar/BoardBar';
 import BoardContent from './BoardContent/BoardContent';
+import { toast } from 'react-toastify';
 
 
 function Board() {
@@ -124,6 +126,18 @@ function Board() {
         })
     }
 
+    const deleteColumnDetails = (columnId) => {
+        const newBoard = { ...board };
+        newBoard.columns = newBoard.columns.filter(column => column._id !== columnId)
+        newBoard.columnOrderIds = newBoard.columnOrderIds.filter(_id => _id !== columnId)
+        setBoard(newBoard)
+
+        deleteColumnDetailsAPI(columnId).then(res => {
+            toast.success(res?.deleteResult)
+        })
+
+    }
+
     if (!board) {
         return (
             <Box sx={{
@@ -150,6 +164,7 @@ function Board() {
                 moveColumns={moveColumns}
                 moveCardInTheSameColumn={moveCardInTheSameColumn}
                 moveCartToDifferentColumn={moveCartToDifferentColumn}
+                deleteColumnDetails={deleteColumnDetails}
             />
         </Container>
     )
